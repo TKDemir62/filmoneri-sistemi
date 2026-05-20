@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Film Öneri Sistemi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+{% if mesaj %}
+<script>
+    alert("{{ mesaj }}");
+</script>
+{% endif %}
+
+<div class="navbar">
+
+    <h1>🎬 Film/dizi öneri sistemi</h1>
+
+    <p>
+         film ve dizi önerileri keşfet
+    </p>
+
+</div>
+
+<form method="POST" action="/oner">
+
+    <select name="tip">
+
+        <option value="movie">Film</option>
+        <option value="tv">Dizi</option>
+
+    </select>
+
+    <input type="text" name="film" placeholder="Film adı girin">
+
+    <button type="submit">Ara</button>
+
+</form>
+
+
+{% if film %}
+
+<h2>Sonuç:</h2>
+
+<div class="film-container">
+
+    <div class="film-card {{ film.tur_adi|lower|replace(' ', '-') }}">
+
+        <img src="{{ film.resim }}">
+
+        <h3>{{ film.ad }}</h3>
+
+        <p>⭐ {{ film.puan }}</p>
+
+        <p class="aciklama">
+            {{ film.aciklama }}
+        </p>
+
+        <p>
+        {% if film.tip == "movie" %}
+        🎬 Film
+        {% else %}
+        📺 Dizi
+        {% endif %}
+        </p>
+
+        <p class="tur-tag {{ film.tur_adi|lower|replace(' ', '-') }}">
+            🎭 {{ film.tur_adi }}
+        </p>
+
+        <p>
+        {% if film.dil == "tr" %}
+        🇹🇷 Ülke: Türkiye
+
+        {% elif film.dil == "en" %}
+        🇺🇸 Ülke: ABD
+
+        {% elif film.dil == "ko" %}
+        🇰🇷 Ülke: Kore
+
+        {% elif film.dil == "ja" %}
+        🇯🇵 Ülke: Japonya
+
+        {% elif film.dil == "bn" %}
+        🇧🇩 Ülke: Bangladeş
+
+        {% elif film.dil == "fr" %}
+        🇫🇷 Ülke: Fransa
+
+        {% elif film.dil == "es" %}
+        🇪🇸 Ülke: İspanya
+
+        {% elif film.dil == "de" %}
+        🇩🇪 Ülke: Almanya
+
+        {% elif film.dil == "it" %}
+        🇮🇹 Ülke: İtalya
+
+        {% else %}
+        🌍 Ülke: Diğer
+
+        {% endif %}
+        </p>
+
+        <form action="/favori-ekle" method="POST">
+
+            <input type="hidden" name="film_adi" value="{{ film.ad }}">
+            <input type="hidden" name="film_puan" value="{{ film.puan }}">
+            <input type="hidden" name="film_resim" value="{{ film.resim }}">
+            <input type="hidden" name="film_aciklama" value="{{ film.aciklama }}">
+            <input type="hidden" name="film_tur" value="{{ film.tur }}">
+            <input type="hidden" name="film_id" value="{{ film.id }}">
+            <input type="hidden" name="film_tip" value="{{ film.tip }}">
+            <input type="hidden" name="film_dil" value="{{ film.dil }}">
+            <input type="hidden" name="film_tur_adi" value="{{ film.tur_adi }}">
+
+            <button type="submit">⭐ Favoriye Ekle</button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
+<h2>⭐ Favori İçerikler</h2>
+
+<div class="film-container">
+
+    {% for fav in favoriler %}
+
+    <div class="film-card {{ fav.tur_adi|lower|replace(' ', '-') }}">
+
+        <img src="{{ fav.resim }}">
+
+        <h3>{{ fav.ad }}</h3>
+
+        <p>⭐ {{ fav.puan }}</p>
+
+        <p>
+        {% if fav.tip == "movie" %}
+        🎬 Film
+        {% else %}
+        📺 Dizi
+        {% endif %}
+        </p>
+
+        <p class="tur-tag {{ fav.tur_adi|lower|replace(' ', '-') }}">
+            🎭 {{ fav.tur_adi }}
+        </p>
+
+        <p>
+        {% if fav.dil == "tr" %}
+        🇹🇷 Ülke: Türkiye
+
+        {% elif fav.dil == "en" %}
+        🇺🇸 Ülke: ABD
+
+        {% elif fav.dil == "ko" %}
+        🇰🇷 Ülke: Kore
+
+        {% elif fav.dil == "ja" %}
+        🇯🇵 Ülke: Japonya
+
+        {% elif fav.dil == "bn" %}
+        🇧🇩 Ülke: Bangladeş
+
+        {% elif fav.dil == "fr" %}
+        🇫🇷 Ülke: Fransa
+
+        {% elif fav.dil == "es" %}
+        🇪🇸 Ülke: İspanya
+
+        {% elif fav.dil == "de" %}
+        🇩🇪 Ülke: Almanya
+
+        {% elif fav.dil == "it" %}
+        🇮🇹 Ülke: İtalya
+
+        {% else %}
+        🌍 Ülke: Diğer
+
+        {% endif %}
+        </p>
+
+        <form action="/favori-sil" method="POST">
+
+            <input type="hidden" name="film_adi" value="{{ fav.ad }}">
+
+            <button type="submit">❌ Favoriden Çıkar</button>
+
+        </form>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+<form action="/oneri-al" method="POST">
+
+ <button class="oneri-btn" type="submit">🎯 Bana Öner</button>
+
+</form>
+
+{% if onerilen_filmler|length > 0 %}
+
+<h2>🎬 Sana Önerilen Filmler</h2>
+
+<div class="film-container">
+
+    {% for film in onerilen_filmler %}
+
+    <div class="film-card {{ film.tur_adi|lower|replace(' ', '-') }}">
+
+        <img src="{{ film.resim }}">
+
+        <h3>{{ film.ad }}</h3>
+
+        <p>⭐ {{ film.puan }}</p>
+
+        <p>🎬 Film</p>
+
+        <p class="tur-tag {{ film.tur_adi|lower|replace(' ', '-') }}">
+            🎭 {{ film.tur_adi }}
+        </p>
+
+        <p>
+        {% if film.dil == "tr" %}
+        🇹🇷 Ülke: Türkiye
+
+        {% elif film.dil == "en" %}
+        🇺🇸 Ülke: ABD
+
+        {% elif film.dil == "ko" %}
+        🇰🇷 Ülke: Kore
+
+        {% elif film.dil == "ja" %}
+        🇯🇵 Ülke: Japonya
+
+        {% elif film.dil == "bn" %}
+        🇧🇩 Ülke: Bangladeş
+
+        {% elif film.dil == "fr" %}
+        🇫🇷 Ülke: Fransa
+
+        {% elif film.dil == "es" %}
+        🇪🇸 Ülke: İspanya
+
+        {% elif film.dil == "de" %}
+        🇩🇪 Ülke: Almanya
+
+        {% elif film.dil == "it" %}
+        🇮🇹 Ülke: İtalya
+
+        {% else %}
+        🌍 Ülke: Diğer
+
+        {% endif %}
+        </p>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endif %}
+
+
+{% if onerilen_diziler|length > 0 %}
+
+<h2>📺 Sana Önerilen Diziler</h2>
+
+<div class="film-container">
+
+    {% for film in onerilen_diziler %}
+
+    <div class="film-card {{ film.tur_adi|lower|replace(' ', '-') }}">
+
+        <img src="{{ film.resim }}">
+
+        <h3>{{ film.ad }}</h3>
+
+        <p>⭐ {{ film.puan }}</p>
+
+        <p>📺 Dizi</p>
+
+        <p class="tur-tag {{ film.tur_adi|lower|replace(' ', '-') }}">
+            🎭 {{ film.tur_adi }}
+        </p>
+
+        <p>
+        {% if film.dil == "tr" %}
+        🇹🇷 Ülke: Türkiye
+
+        {% elif film.dil == "en" %}
+        🇺🇸 Ülke: ABD
+
+        {% elif film.dil == "ko" %}
+        🇰🇷 Ülke: Kore
+
+        {% elif film.dil == "ja" %}
+        🇯🇵 Ülke: Japonya
+
+        {% elif film.dil == "bn" %}
+        🇧🇩 Ülke: Bangladeş
+
+        {% elif film.dil == "fr" %}
+        🇫🇷 Ülke: Fransa
+
+        {% elif film.dil == "es" %}
+        🇪🇸 Ülke: İspanya
+
+        {% elif film.dil == "de" %}
+        🇩🇪 Ülke: Almanya
+
+        {% elif film.dil == "it" %}
+        🇮🇹 Ülke: İtalya
+
+        {% else %}
+        🌍 Ülke: Diğer
+
+        {% endif %}
+        </p>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endif %}
+
+</body>
+</html>
