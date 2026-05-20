@@ -2,8 +2,11 @@
 <html>
 <head>
     <title>Film Öneri Sistemi</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
 
 {% if mesaj %}
@@ -12,17 +15,55 @@
 </script>
 {% endif %}
 
-<div class="navbar">
 
-    <h1>🎬 Film/dizi öneri sistemi</h1>
+<!-- NAVBAR -->
 
-    <p>
-         film ve dizi önerileri keşfet
-    </p>
+<div class="topbar">
+
+    <div class="logo">
+        🎬 FilmBox
+    </div>
+
+    <div class="menu">
+
+        <a href="#">Ana Sayfa</a>
+        <a href="#favoriler">Favoriler</a>
+        <a href="#oneriler">Öneriler</a>
+
+    </div>
 
 </div>
 
-<form method="POST" action="/oner">
+
+<!-- HERO -->
+
+<div class="hero">
+
+    <div class="hero-content">
+
+        <p class="hero-mini">
+            🎬 Film / Dizi Öneri Sistemi
+        </p>
+
+        <h1 class="hero-title">
+            Yeni Filmler ve Diziler Keşfet
+        </h1>
+
+        <p class="hero-text">
+            Favorilerine göre öneriler al,
+            yeni içerikler keşfet ve kendi arşivini oluştur.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- SEARCH -->
+
+<form method="POST"
+action="/oner"
+class="search-form">
 
     <select name="tip">
 
@@ -31,16 +72,23 @@
 
     </select>
 
-    <input type="text" name="film" placeholder="Film adı girin">
+    <input
+    type="text"
+    name="film"
+    placeholder="Film adı girin">
 
-    <button type="submit">Ara</button>
+    <button type="submit">
+        Ara
+    </button>
 
 </form>
 
 
+<!-- FILM SONUCU -->
+
 {% if film %}
 
-<h2>Sonuç:</h2>
+<h2>🎬 Arama Sonucu</h2>
 
 <div class="film-container">
 
@@ -57,18 +105,23 @@
         </p>
 
         <p>
+
         {% if film.tip == "movie" %}
         🎬 Film
         {% else %}
         📺 Dizi
         {% endif %}
+
         </p>
 
         <p class="tur-tag {{ film.tur_adi|lower|replace(' ', '-') }}">
+
             🎭 {{ film.tur_adi }}
+
         </p>
 
         <p>
+
         {% if film.dil == "tr" %}
         🇹🇷 Ülke: Türkiye
 
@@ -81,25 +134,14 @@
         {% elif film.dil == "ja" %}
         🇯🇵 Ülke: Japonya
 
-        {% elif film.dil == "bn" %}
-        🇧🇩 Ülke: Bangladeş
-
         {% elif film.dil == "fr" %}
         🇫🇷 Ülke: Fransa
-
-        {% elif film.dil == "es" %}
-        🇪🇸 Ülke: İspanya
-
-        {% elif film.dil == "de" %}
-        🇩🇪 Ülke: Almanya
-
-        {% elif film.dil == "it" %}
-        🇮🇹 Ülke: İtalya
 
         {% else %}
         🌍 Ülke: Diğer
 
         {% endif %}
+
         </p>
 
         <form action="/favori-ekle" method="POST">
@@ -114,7 +156,11 @@
             <input type="hidden" name="film_dil" value="{{ film.dil }}">
             <input type="hidden" name="film_tur_adi" value="{{ film.tur_adi }}">
 
-            <button type="submit">⭐ Favoriye Ekle</button>
+            <button type="submit">
+
+                ⭐ Favoriye Ekle
+
+            </button>
 
         </form>
 
@@ -125,210 +171,216 @@
 {% endif %}
 
 
-<h2>⭐ Favori İçerikler</h2>
+<!-- TREND FILMLER -->
 
-<div class="film-container">
+<h2>🔥 Trend Filmler</h2>
 
-    {% for fav in favoriler %}
+<div class="slider">
 
-    <div class="film-card {{ fav.tur_adi|lower|replace(' ', '-') }}">
+{% for trend in trend_filmler %}
 
-        <img src="{{ fav.resim }}">
+<div class="trend-card">
 
-        <h3>{{ fav.ad }}</h3>
+    <img src="{{ trend.resim }}">
 
-        <p>⭐ {{ fav.puan }}</p>
+    <form action="/favori-ekle" method="POST">
 
-        <p>
-        {% if fav.tip == "movie" %}
-        🎬 Film
-        {% else %}
-        📺 Dizi
-        {% endif %}
-        </p>
+        <input type="hidden" name="film_adi" value="{{ trend.ad }}">
+        <input type="hidden" name="film_puan" value="{{ trend.puan }}">
+        <input type="hidden" name="film_resim" value="{{ trend.resim }}">
+        <input type="hidden" name="film_aciklama" value="{{ trend.aciklama }}">
+        <input type="hidden" name="film_tur" value="{{ trend.tur }}">
+        <input type="hidden" name="film_id" value="{{ trend.id }}">
+        <input type="hidden" name="film_tip" value="{{ trend.tip }}">
+        <input type="hidden" name="film_dil" value="{{ trend.dil }}">
+        <input type="hidden" name="film_tur_adi" value="{{ trend.tur_adi }}">
 
-        <p class="tur-tag {{ fav.tur_adi|lower|replace(' ', '-') }}">
-            🎭 {{ fav.tur_adi }}
-        </p>
+        <button class="trend-btn" type="submit">
 
-        <p>
-        {% if fav.dil == "tr" %}
-        🇹🇷 Ülke: Türkiye
+            ⭐ Favoriye Ekle
 
-        {% elif fav.dil == "en" %}
-        🇺🇸 Ülke: ABD
+        </button>
 
-        {% elif fav.dil == "ko" %}
-        🇰🇷 Ülke: Kore
-
-        {% elif fav.dil == "ja" %}
-        🇯🇵 Ülke: Japonya
-
-        {% elif fav.dil == "bn" %}
-        🇧🇩 Ülke: Bangladeş
-
-        {% elif fav.dil == "fr" %}
-        🇫🇷 Ülke: Fransa
-
-        {% elif fav.dil == "es" %}
-        🇪🇸 Ülke: İspanya
-
-        {% elif fav.dil == "de" %}
-        🇩🇪 Ülke: Almanya
-
-        {% elif fav.dil == "it" %}
-        🇮🇹 Ülke: İtalya
-
-        {% else %}
-        🌍 Ülke: Diğer
-
-        {% endif %}
-        </p>
-
-        <form action="/favori-sil" method="POST">
-
-            <input type="hidden" name="film_adi" value="{{ fav.ad }}">
-
-            <button type="submit">❌ Favoriden Çıkar</button>
-
-        </form>
-
-    </div>
-
-    {% endfor %}
+    </form>
 
 </div>
 
-<form action="/oneri-al" method="POST">
+{% endfor %}
 
- <button class="oneri-btn" type="submit">🎯 Bana Öner</button>
+</div>
 
-</form>
+
+<!-- FAVORILER -->
+
+<h2 id="favoriler">
+
+    ⭐ Favori İçerikler
+
+</h2>
+
+
+<!-- ONERI BUTTON -->
+
+<div class="oneri-wrapper">
+
+    <form action="/oneri-al" method="POST">
+
+        <button class="oneri-btn" type="submit">
+
+            🎯 Bana Öner
+
+        </button>
+
+    </form>
+
+</div>
+
+
+<div class="film-container">
+
+{% for fav in favoriler %}
+
+<div class="film-card {{ fav.tur_adi|lower|replace(' ', '-') }}">
+
+    <img src="{{ fav.resim }}">
+
+    <h3>{{ fav.ad }}</h3>
+
+    <p>⭐ {{ fav.puan }}</p>
+
+    <p>
+
+    {% if fav.tip == "movie" %}
+    🎬 Film
+    {% else %}
+    📺 Dizi
+    {% endif %}
+
+    </p>
+
+    <p class="tur-tag {{ fav.tur_adi|lower|replace(' ', '-') }}">
+
+        🎭 {{ fav.tur_adi }}
+
+    </p>
+
+    <p>
+
+    {% if fav.dil == "tr" %}
+    🇹🇷 Ülke: Türkiye
+
+    {% elif fav.dil == "en" %}
+    🇺🇸 Ülke: ABD
+
+    {% elif fav.dil == "ko" %}
+    🇰🇷 Ülke: Kore
+
+    {% elif fav.dil == "ja" %}
+    🇯🇵 Ülke: Japonya
+
+    {% elif fav.dil == "fr" %}
+    🇫🇷 Ülke: Fransa
+
+    {% else %}
+    🌍 Ülke: Diğer
+
+    {% endif %}
+
+    </p>
+
+    <form action="/favori-sil" method="POST">
+
+        <input type="hidden"
+        name="film_adi"
+        value="{{ fav.ad }}">
+
+        <button type="submit">
+
+            ❌ Favoriden Çıkar
+
+        </button>
+
+    </form>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+
+<!-- FILM ONERILERI -->
 
 {% if onerilen_filmler|length > 0 %}
 
-<h2>🎬 Sana Önerilen Filmler</h2>
+<h2 id="oneriler">
+
+    🎬 Sana Önerilen Filmler
+
+</h2>
 
 <div class="film-container">
 
-    {% for film in onerilen_filmler %}
+{% for film in onerilen_filmler %}
 
-    <div class="film-card {{ film.tur_adi|lower|replace(' ', '-') }}">
+<div class="film-card {{ film.tur_adi|lower|replace(' ', '-') }}">
 
-        <img src="{{ film.resim }}">
+    <img src="{{ film.resim }}">
 
-        <h3>{{ film.ad }}</h3>
+    <h3>{{ film.ad }}</h3>
 
-        <p>⭐ {{ film.puan }}</p>
+    <p>⭐ {{ film.puan }}</p>
 
-        <p>🎬 Film</p>
+    <p>🎬 Film</p>
 
-        <p class="tur-tag {{ film.tur_adi|lower|replace(' ', '-') }}">
-            🎭 {{ film.tur_adi }}
-        </p>
+    <p class="tur-tag {{ film.tur_adi|lower|replace(' ', '-') }}">
 
-        <p>
-        {% if film.dil == "tr" %}
-        🇹🇷 Ülke: Türkiye
+        🎭 {{ film.tur_adi }}
 
-        {% elif film.dil == "en" %}
-        🇺🇸 Ülke: ABD
+    </p>
 
-        {% elif film.dil == "ko" %}
-        🇰🇷 Ülke: Kore
+</div>
 
-        {% elif film.dil == "ja" %}
-        🇯🇵 Ülke: Japonya
-
-        {% elif film.dil == "bn" %}
-        🇧🇩 Ülke: Bangladeş
-
-        {% elif film.dil == "fr" %}
-        🇫🇷 Ülke: Fransa
-
-        {% elif film.dil == "es" %}
-        🇪🇸 Ülke: İspanya
-
-        {% elif film.dil == "de" %}
-        🇩🇪 Ülke: Almanya
-
-        {% elif film.dil == "it" %}
-        🇮🇹 Ülke: İtalya
-
-        {% else %}
-        🌍 Ülke: Diğer
-
-        {% endif %}
-        </p>
-
-    </div>
-
-    {% endfor %}
+{% endfor %}
 
 </div>
 
 {% endif %}
 
 
+<!-- DIZI ONERILERI -->
+
 {% if onerilen_diziler|length > 0 %}
 
-<h2>📺 Sana Önerilen Diziler</h2>
+<h2>
+
+    📺 Sana Önerilen Diziler
+
+</h2>
 
 <div class="film-container">
 
-    {% for film in onerilen_diziler %}
+{% for film in onerilen_diziler %}
 
-    <div class="film-card {{ film.tur_adi|lower|replace(' ', '-') }}">
+<div class="film-card {{ film.tur_adi|lower|replace(' ', '-') }}">
 
-        <img src="{{ film.resim }}">
+    <img src="{{ film.resim }}">
 
-        <h3>{{ film.ad }}</h3>
+    <h3>{{ film.ad }}</h3>
 
-        <p>⭐ {{ film.puan }}</p>
+    <p>⭐ {{ film.puan }}</p>
 
-        <p>📺 Dizi</p>
+    <p>📺 Dizi</p>
 
-        <p class="tur-tag {{ film.tur_adi|lower|replace(' ', '-') }}">
-            🎭 {{ film.tur_adi }}
-        </p>
+    <p class="tur-tag {{ film.tur_adi|lower|replace(' ', '-') }}">
 
-        <p>
-        {% if film.dil == "tr" %}
-        🇹🇷 Ülke: Türkiye
+        🎭 {{ film.tur_adi }}
 
-        {% elif film.dil == "en" %}
-        🇺🇸 Ülke: ABD
+    </p>
 
-        {% elif film.dil == "ko" %}
-        🇰🇷 Ülke: Kore
+</div>
 
-        {% elif film.dil == "ja" %}
-        🇯🇵 Ülke: Japonya
-
-        {% elif film.dil == "bn" %}
-        🇧🇩 Ülke: Bangladeş
-
-        {% elif film.dil == "fr" %}
-        🇫🇷 Ülke: Fransa
-
-        {% elif film.dil == "es" %}
-        🇪🇸 Ülke: İspanya
-
-        {% elif film.dil == "de" %}
-        🇩🇪 Ülke: Almanya
-
-        {% elif film.dil == "it" %}
-        🇮🇹 Ülke: İtalya
-
-        {% else %}
-        🌍 Ülke: Diğer
-
-        {% endif %}
-        </p>
-
-    </div>
-
-    {% endfor %}
+{% endfor %}
 
 </div>
 
